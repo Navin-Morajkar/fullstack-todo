@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { STATUS_OPTIONS } from "../../constants/common";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiCalendar, FiEdit2, FiTrash2 } from "react-icons/fi";
 import type { Task } from "../../types/common";
 import { deleteTask, updateTask } from "../../services/api";
 import { AlertModal } from "../AlertModal/AlertModal";
 import { useState } from "react";
+import { formatDate, getBadgeClass } from "../../helpers/common";
 
 type TaskListProps = {
   tasks: Task[];
@@ -33,20 +34,6 @@ const TaskList = (props: TaskListProps) => {
 
   const confirmDelete = (id: number) => {
     setTaskToDelete(id); // This triggers the modal to open
-  };
-
-  // Helper for Badge Colors
-  const getBadgeClass = (status: string) => {
-    switch (status) {
-      case "Done":
-        return "status-badge done";
-      case "In Progress":
-        return "status-badge in-progress";
-      case "In Review":
-        return "status-badge in-review";
-      default:
-        return "status-badge incomplete";
-    }
   };
 
   return (
@@ -79,7 +66,21 @@ const TaskList = (props: TaskListProps) => {
               {task.description && (
                 <span className="task-desc">{task.description}</span>
               )}
-              <span className={getBadgeClass(task.status)}>{task.status}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+                  <span className={getBadgeClass(task.status)}>
+                    {task.status}
+                  </span>
+                  
+                  <span style={{ 
+                    fontSize: '0.8rem', 
+                    color: '#94a3b8', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '4px' 
+                  }}>
+                    <FiCalendar size={12} /> {formatDate(task.createdAt)}
+                  </span>
+                </div>
             </div>
 
             <div className="actions">
