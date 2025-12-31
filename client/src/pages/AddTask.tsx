@@ -38,7 +38,7 @@ export default function AddTaskPage() {
           title="Go Back">
           <FiArrowLeft size={24} />
         </button>
-        <h1 style={{ margin: 0, fontSize: "2rem" }}>Create New Task</h1>
+        <h1 style={{ margin: 0, fontSize: "2rem" }}>Add New Task</h1>
       </div>
         <form onSubmit={handleSubmit}>
           {/* Task Name */}
