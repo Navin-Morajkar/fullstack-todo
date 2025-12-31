@@ -15,17 +15,16 @@ app.use(express.json());
 // GET tasks API
 app.get("/tasks", async (req: Request, res: Response) => {
   try {
-    // Extract query params
-    const { status, search } = req.query;
+    const { status, search, sortBy, order } = req.query;
 
+    // FILTER by `status`
     const whereClause: any = {};
 
-    // Filter by Status
     if (status && status !== "All") {
       whereClause.status = String(status);
     }
 
-    // Filter by Search Name (Case insensitive)
+    // SEARCH by task name
     if (search) {
       whereClause.name = {
         contains: String(search),
@@ -33,13 +32,26 @@ app.get("/tasks", async (req: Request, res: Response) => {
       };
     }
 
+    // SORTING
+    const sortField = (sortBy as string) || "createdAt";
+    const sortOrder = (order as string) === "asc" ? "asc" : "desc";
+
+    // Validate sortField to prevent crashing (only allow safe fields)
+    const validSortFields = ["name", "status", "createdAt"];
+    const finalSortField = validSortFields.includes(sortField)
+      ? sortField
+      : "createdAt";
+
     const tasks = await prisma.task.findMany({
       where: whereClause,
-      orderBy: { createdAt: "desc" },
+      orderBy: {
+        [finalSortField]: sortOrder,
+      },
     });
 
     res.json(tasks);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error fetching tasks" });
   }
 });

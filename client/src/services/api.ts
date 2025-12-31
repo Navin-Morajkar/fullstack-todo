@@ -7,9 +7,14 @@ export const api = axios.create({
   baseURL: API_URL,
 });
 
-export const getTasks = (status?: string, search?: string) => {
-  return api.get("/tasks", {
-    params: { status, search },
+export const getTasks = (
+  status?: string, 
+  search?: string, 
+  sortBy?: string, 
+  order?: 'asc' | 'desc'
+) => {
+  return api.get('/tasks', {
+    params: { status, search, sortBy, order }
   });
 };
 

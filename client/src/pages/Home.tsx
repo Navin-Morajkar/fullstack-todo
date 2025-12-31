@@ -8,19 +8,20 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
-    // Debounce search slightly to avoid too many API calls while typing
     const timer = setTimeout(() => {
       loadTasks();
     }, 300);
-
     return () => clearTimeout(timer);
-  }, [searchQuery, filterStatus]);
+  }, [searchQuery, filterStatus, sortBy, sortOrder]); // Re-fetch when ANY of these change
 
   const loadTasks = async () => {
     try {
-      const res = await getTasks(filterStatus, searchQuery);
+      // Send all params to backend
+      const res = await getTasks(filterStatus, searchQuery, sortBy, sortOrder);
       setTasks(res.data);
     } catch (err) {
       console.error(err);
@@ -35,7 +36,11 @@ export default function Home() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure?")) return;
     await deleteTask(id);
-    loadTasks(); // Refresh list
+    loadTasks();
+  };
+
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
   };
 
   return (
@@ -48,9 +53,9 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* --- FILTER & SEARCH BAR --- */}
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         gap: '10px', 
         marginBottom: '20px', 
         padding: '15px', 
@@ -58,24 +63,55 @@ export default function Home() {
         borderRadius: '8px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
-        <input 
-          type="text" 
-          placeholder="Search tasks..." 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ flex: 2 }}
-        />
         
-        <select 
-          value={filterStatus} 
-          onChange={(e) => setFilterStatus(e.target.value)}
-          style={{ flex: 1 }}
-        >
-          <option value="All">All Statuses</option>
-          {STATUS_OPTIONS.map(status => (
-            <option key={status} value={status}>{status}</option>
-          ))}
-        </select>
+        {/* Search & Filter Status */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input 
+            type="text" 
+            placeholder="Search tasks..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ flex: 2 }}
+          />
+          <select 
+            value={filterStatus} 
+            onChange={(e) => setFilterStatus(e.target.value)}
+            style={{ flex: 1 }}
+          >
+            <option value="All">Filter: All</option>
+            {STATUS_OPTIONS.map(status => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Sorting Controls */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{whiteSpace: 'nowrap', fontSize: '0.9rem', color: '#666'}}>Sort by:</label>
+          
+          <select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{ flex: 1 }}
+          >
+            <option value="createdAt">Date Created</option>
+            <option value="name">Task Name</option>
+            <option value="status">Status</option>
+          </select>
+
+          <button 
+            onClick={toggleSortOrder}
+            style={{ 
+              background: '#e0e7ff', 
+              color: '#4338ca',
+              minWidth: '50px' 
+            }}
+            title={sortOrder === 'asc' ? "Ascending (A-Z)" : "Descending (Z-A)"}
+          >
+            {sortOrder === 'asc' ? '⬆ Asc' : '⬇ Desc'}
+          </button>
+        </div>
+
       </div>
 
       <div>
@@ -102,14 +138,13 @@ export default function Home() {
             </div>
             
             <div style={{ display: 'flex', gap: '5px' }}>
-              {/* Quick Status Change Dropdown */}
               <select 
                 value={task.status} 
                 onChange={(e) => updateStatus(task.id, e.target.value)}
                 style={{ width: 'auto', padding: '5px', fontSize: '0.9rem' }}
               >
-                {STATUS_OPTIONS.map(status => (
-                  <option key={status} value={status}>{status}</option>
+                {STATUS_OPTIONS.map(s => (
+                  <option key={s} value={s}>{s}</option>
                 ))}
               </select>
 
