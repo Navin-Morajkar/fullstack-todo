@@ -1,14 +1,7 @@
-// client/src/HomePage.tsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getTasks, updateTask, deleteTask } from "../services/api";
-
-// Define the interface for our data
-interface Task {
-  id: number;
-  name: string;
-  status: string;
-}
+import type { Task } from "../types/common";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
