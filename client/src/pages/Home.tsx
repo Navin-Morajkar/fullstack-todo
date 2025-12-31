@@ -8,6 +8,7 @@ import {
   FiArrowUp,
   FiArrowDown,
 } from "react-icons/fi";
+import { AlertModal } from "../components/AlertModal/AlertModal";
 
 interface Task {
   id: number;
@@ -24,6 +25,8 @@ export default function HomePage() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
   const navigate = useNavigate();
 
@@ -31,6 +34,14 @@ export default function HomePage() {
     const timer = setTimeout(() => loadTasks(), 300);
     return () => clearTimeout(timer);
   }, [searchQuery, filterStatus, sortBy, sortOrder]);
+
+  useEffect(() => {
+    const hasSeenWarning = sessionStorage.getItem("seen-warning");
+    if (!hasSeenWarning) {
+      setShowWelcomeModal(true);
+      sessionStorage.setItem("seen-warning", "true");
+    }
+  }, []);
 
   const loadTasks = async () => {
     try {
@@ -46,10 +57,16 @@ export default function HomePage() {
     loadTasks();
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure?")) return;
-    await deleteTask(id);
-    loadTasks();
+  const confirmDelete = (id: number) => {
+    setTaskToDelete(id); // This triggers the modal to open
+  };
+
+  const executeDelete = async () => {
+    if (taskToDelete) {
+      await deleteTask(taskToDelete);
+      setTaskToDelete(null); // Close modal
+      loadTasks();
+    }
   };
 
   // Helper for Badge Colors
@@ -70,7 +87,7 @@ export default function HomePage() {
     <div className="container">
       <h1>Task Manager</h1>
 
-      {/* 1. Main Action Button */}
+      {/* Main Action Button */}
       <div style={{ marginBottom: "24px" }}>
         <Link to="/add" style={{ textDecoration: "none" }}>
           <button className="btn-primary">
@@ -79,9 +96,8 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* 2. Controls Card */}
+      {/* Controls Card */}
       <div className="controls-card">
-        {/* Search Bar Wrapper (Fixed Overflow) */}
         <div className="search-wrapper">
           <input
             type="text"
@@ -160,8 +176,7 @@ export default function HomePage() {
             <div
               className="task-content"
               onClick={() => navigate(`/edit/${task.id}`)}
-              style={{ cursor: "pointer" }} /* Visual cue */
-            >
+              style={{ cursor: "pointer" }}>
               <span className="task-title">{task.name}</span>
               {task.description && (
                 <span className="task-desc">{task.description}</span>
@@ -170,7 +185,6 @@ export default function HomePage() {
             </div>
 
             <div className="actions">
-              {/* NEW CLASS: status-select */}
               <select
                 value={task.status}
                 onChange={(e) => updateStatus(task.id, e.target.value)}
@@ -189,7 +203,7 @@ export default function HomePage() {
               </Link>
 
               <button
-                onClick={() => handleDelete(task.id)}
+                onClick={() => confirmDelete(task.id)}
                 className="btn-delete"
                 title="Delete">
                 <FiTrash2 size={16} />
@@ -198,6 +212,30 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+      <AlertModal
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+        title="⚠️ Deployment Note"
+        message={
+          <>
+            The backend is hosted on a <strong>Free Tier</strong> instance.
+            <br />
+            <br />
+            It may take up to <strong>60 seconds</strong> to wake up for the
+            first request. Please be patient if the data doesn't load
+            immediately!
+          </>
+        }
+      />
+      <AlertModal
+        isOpen={!!taskToDelete}
+        onClose={() => setTaskToDelete(null)}
+        title="Delete Task?"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        type="danger"
+        confirmText="Yes, Delete"
+        onConfirm={executeDelete}
+      />
     </div>
   );
 }

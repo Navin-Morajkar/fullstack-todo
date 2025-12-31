@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { deleteTask, getTaskById, updateTask } from "../services/api";
 import { STATUS_OPTIONS } from "../constants/common";
 import { FiArrowLeft, FiSave, FiTrash2 } from "react-icons/fi";
+import { AlertModal } from "../components/AlertModal/AlertModal";
 
 export default function EditTaskPage() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ export default function EditTaskPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Fetch the existing task data
   useEffect(() => {
@@ -43,11 +45,14 @@ export default function EditTaskPage() {
     navigate("/");
   };
 
-  const handleDelete = async () => {
-    if (!id) return;
-    if (confirm("Are you sure you want to delete this task?")) {
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const executeDelete = async () => {
+    if (id) {
       await deleteTask(Number(id));
-      navigate('/');
+      navigate("/");
     }
   };
 
@@ -114,7 +119,7 @@ export default function EditTaskPage() {
 
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             style={{
               flex: 1,
               backgroundColor: "#fee2e2",
@@ -124,6 +129,15 @@ export default function EditTaskPage() {
           </button>
         </div>
       </form>
+      <AlertModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Task"
+        message="Are you sure you want to delete this task forever?"
+        type="danger"
+        confirmText="Delete"
+        onConfirm={executeDelete}
+      />
     </div>
   );
 }

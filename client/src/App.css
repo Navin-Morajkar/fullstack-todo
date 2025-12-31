@@ -219,8 +219,17 @@ select:focus { outline: 2px solid var(--primary); }
 }
 
 /* Add/Edit Pages */
-.form-group { margin-bottom: 20px; }
-label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+.form-group { 
+  margin-bottom: 20px; 
+}
+
+label { 
+  display: block; 
+  margin-bottom: 8px; 
+  font-weight: 600; 
+  color: var(--text-main); 
+}
+
 input[type="text"], textarea {
   width: 100%;
   padding: 12px;
@@ -229,13 +238,8 @@ input[type="text"], textarea {
   font-size: 1rem;
   font-family: inherit;
 }
-input[type="text"]:focus, textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
-}
 
-textarea:focus {
+input[type="text"]:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-light);
