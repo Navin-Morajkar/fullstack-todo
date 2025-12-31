@@ -1,4 +1,3 @@
-// client/src/api.ts
 import axios from "axios";
 
 // If VITE_API_URL is set (Production), use it. Otherwise use localhost.

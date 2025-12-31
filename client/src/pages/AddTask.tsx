@@ -1,7 +1,7 @@
 // client/src/AddTaskPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addTask } from "./api";
+import { addTask } from "../services/api";
 
 export default function AddTaskPage() {
   const [name, setName] = useState("");

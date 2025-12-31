@@ -1,7 +1,7 @@
 // client/src/HomePage.tsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getTasks, updateTask, deleteTask } from "./api";
+import { getTasks, updateTask, deleteTask } from "../services/api";
 
 // Define the interface for our data
 interface Task {
@@ -10,7 +10,7 @@ interface Task {
   status: string;
 }
 
-export default function HomePage() {
+export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   // Fetch tasks on load
