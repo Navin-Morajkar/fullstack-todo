@@ -16,7 +16,7 @@ A responsive To-Do list application built with React, Node.js, TypeScript, and P
 ## Features
 - Create new tasks
 - View list of tasks (sorted by newest)
-- Mark tasks as Complete/Incomplete
+- Change task status
 - Delete tasks
 - Responsive Design
 

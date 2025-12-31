@@ -56,42 +56,56 @@ app.get("/tasks", async (req: Request, res: Response) => {
   }
 });
 
-// CREATE task API
-app.post("/tasks", async (req: Request, res: Response) => {
+// GET task by ID
+app.get('/tasks/:id', async (req: Request, res: Response) => {
   try {
-    const { name, status } = req.body;
-
-    // Basic validation
-    if (!name) {
-      res.status(400).json({ error: "Task name is required" });
+    const { id } = req.params;
+    const task = await prisma.task.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!task) {
+      res.status(404).json({ error: 'Task not found' });
       return;
     }
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching task' });
+  }
+});
 
+// CREATE task API
+app.post('/tasks', async (req: Request, res: Response) => {
+  try {
+    const { name, status, description } = req.body;
+    if (!name) {
+      res.status(400).json({ error: 'Task name is required' });
+      return;
+    }
     const newTask = await prisma.task.create({
       data: {
         name,
-        status: status || "Incomplete",
+        status: status || 'To Do',
+        description: description || '', //
       },
     });
     res.json(newTask);
   } catch (error) {
-    res.status(500).json({ error: "Error creating task" });
+    res.status(500).json({ error: 'Error creating task' });
   }
 });
 
 // UPDATE task API
-app.put("/tasks/:id", async (req: Request, res: Response) => {
+app.put('/tasks/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status, name } = req.body;
-
+    const { status, name, description } = req.body;
     const updatedTask = await prisma.task.update({
-      where: { id: Number(id) }, // Convert string ID to Number for Postgres
-      data: { status, name },
+      where: { id: Number(id) },
+      data: { status, name, description },
     });
     res.json(updatedTask);
   } catch (error) {
-    res.status(500).json({ error: "Error updating task" });
+    res.status(500).json({ error: 'Error updating task' });
   }
 });
 

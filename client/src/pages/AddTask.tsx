@@ -5,14 +5,15 @@ import { addTask } from "../services/api";
 
 export default function AddTaskPage() {
   const [name, setName] = useState("");
-  const [status, setStatus] = useState("Incomplete");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("To Do");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
 
-    await addTask(name, status);
+    await addTask(name, status, description);
     navigate("/"); // Go back home
   };
 
@@ -35,15 +36,31 @@ export default function AddTaskPage() {
           />
         </div>
 
+        <div className="form-group">
+          <label>Description (Optional):</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #d1d5db",
+            }}
+          />
+        </div>
+
         <div>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Status:</label>
-          <select 
-            value={status} 
+          <label style={{ display: "block", marginBottom: "5px" }}>
+            Status:
+          </label>
+          <select
+            value={status}
             onChange={(e) => setStatus(e.target.value)}
-            style={{ width: '100%', padding: '8px' }}
-          >
+            style={{ width: "100%", padding: "8px" }}>
             {/* MATCHES THE HOME PAGE OPTIONS */}
-            <option value="Incomplete">Incomplete</option>
+            <option value="To Do">To Do</option>
             <option value="In Progress">In Progress</option>
             <option value="In Review">In Review</option>
             <option value="Done">Done</option>
