@@ -1,4 +1,3 @@
-// client/src/AddTaskPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addTask } from "../services/api";
@@ -14,7 +13,7 @@ export default function AddTaskPage() {
     if (!name) return;
 
     await addTask(name, status, description);
-    navigate("/"); // Go back home
+    navigate("/");
   };
 
   return (
@@ -59,7 +58,6 @@ export default function AddTaskPage() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             style={{ width: "100%", padding: "8px" }}>
-            {/* MATCHES THE HOME PAGE OPTIONS */}
             <option value="To Do">To Do</option>
             <option value="In Progress">In Progress</option>
             <option value="In Review">In Review</option>

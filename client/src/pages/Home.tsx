@@ -1,26 +1,39 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getTasks, updateTask, deleteTask } from "../services/api";
-import type { Task } from "../types/common";
-import { STATUS_OPTIONS } from "../constants/common";
+import {
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiArrowUp,
+  FiArrowDown,
+} from "react-icons/fi";
 
-export default function Home() {
+interface Task {
+  id: number;
+  name: string;
+  status: string;
+  description?: string;
+}
+
+const STATUS_OPTIONS = ["Incomplete", "In Progress", "In Review", "Done"];
+
+export default function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadTasks();
-    }, 300);
+    const timer = setTimeout(() => loadTasks(), 300);
     return () => clearTimeout(timer);
-  }, [searchQuery, filterStatus, sortBy, sortOrder]); // Re-fetch when ANY of these change
+  }, [searchQuery, filterStatus, sortBy, sortOrder]);
 
   const loadTasks = async () => {
     try {
-      // Send all params to backend
       const res = await getTasks(filterStatus, searchQuery, sortBy, sortOrder);
       setTasks(res.data);
     } catch (err) {
@@ -39,59 +52,59 @@ export default function Home() {
     loadTasks();
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  // Helper for Badge Colors
+  const getBadgeClass = (status: string) => {
+    switch (status) {
+      case "Done":
+        return "status-badge done";
+      case "In Progress":
+        return "status-badge in-progress";
+      case "In Review":
+        return "status-badge in-review";
+      default:
+        return "status-badge incomplete";
+    }
   };
 
   return (
     <div className="container">
-      <h1>My To-Do List</h1>
+      <h1>Task Manager</h1>
 
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        <Link to="/add" style={{ flex: 1 }}>
-          <button className="btn-primary">+ Add New Task</button>
+      {/* 1. Main Action Button */}
+      <div style={{ marginBottom: "24px" }}>
+        <Link to="/add" style={{ textDecoration: "none" }}>
+          <button className="btn-primary">
+            <FiPlus size={20} /> Create New Task
+          </button>
         </Link>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          marginBottom: "20px",
-          padding: "15px",
-          background: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-        }}>
-        {/* Search & Filter Status */}
-        <div style={{ display: "flex", gap: "10px" }}>
+      {/* 2. Controls Card */}
+      <div className="controls-card">
+        {/* Search Bar Wrapper (Fixed Overflow) */}
+        <div className="search-wrapper">
           <input
             type="text"
-            placeholder="Search tasks..."
+            className="search-bar"
+            placeholder="Search tasks by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ flex: 2 }}
           />
+        </div>
+
+        {/* Filters Row */}
+        <div className="filters-row">
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
             style={{ flex: 1 }}>
-            <option value="All">Filter: All</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {status}
+            <option value="All">All Statuses</option>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Sorting Controls */}
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <label
-            style={{ whiteSpace: "nowrap", fontSize: "0.9rem", color: "#666" }}>
-            Sort by:
-          </label>
 
           <select
             value={sortBy}
@@ -103,23 +116,39 @@ export default function Home() {
           </select>
 
           <button
-            onClick={toggleSortOrder}
+            onClick={() =>
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
             style={{
-              background: "#e0e7ff",
-              color: "#4338ca",
-              minWidth: "50px",
-            }}
-            title={
-              sortOrder === "asc" ? "Ascending (A-Z)" : "Descending (Z-A)"
-            }>
-            {sortOrder === "asc" ? "⬆ Asc" : "⬇ Desc"}
+              background: "white",
+              border: "1px solid #e2e8f0",
+              minWidth: "100px",
+              color: "#64748b",
+            }}>
+            {sortOrder === "asc" ? (
+              <>
+                <FiArrowUp /> Ascending
+              </>
+            ) : (
+              <>
+                <FiArrowDown /> Descending
+              </>
+            )}
           </button>
         </div>
       </div>
 
+      {/* 3. Task List */}
       <div>
         {tasks.length === 0 && (
-          <p style={{ textAlign: "center", color: "#666" }}>No tasks found.</p>
+          <div
+            style={{
+              textAlign: "center",
+              color: "#94a3b8",
+              marginTop: "40px",
+            }}>
+            <p>No tasks found.</p>
+          </div>
         )}
 
         {tasks.map((task) => (
@@ -128,33 +157,24 @@ export default function Home() {
             className={`task-card ${
               task.status === "Done" ? "completed" : ""
             }`}>
-            <div>
-              <span
-                className="task-name"
-                style={{
-                  display: "block",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                }}>
-                {task.name}
-              </span>
-              <span
-                style={{
-                  fontSize: "0.8rem",
-                  padding: "2px 8px",
-                  borderRadius: "12px",
-                  background: "#e0e7ff",
-                  color: "#4338ca",
-                }}>
-                {task.status}
-              </span>
+            <div
+              className="task-content"
+              onClick={() => navigate(`/edit/${task.id}`)}
+              style={{ cursor: "pointer" }} /* Visual cue */
+            >
+              <span className="task-title">{task.name}</span>
+              {task.description && (
+                <span className="task-desc">{task.description}</span>
+              )}
+              <span className={getBadgeClass(task.status)}>{task.status}</span>
             </div>
 
-            <div style={{ display: "flex", gap: "5px" }}>
+            <div className="actions">
+              {/* NEW CLASS: status-select */}
               <select
                 value={task.status}
                 onChange={(e) => updateStatus(task.id, e.target.value)}
-                style={{ width: "auto", padding: "5px", fontSize: "0.9rem" }}>
+                className="status-select">
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -163,20 +183,16 @@ export default function Home() {
               </select>
 
               <Link to={`/edit/${task.id}`}>
-                <button
-                  style={{
-                    background: "#4f46e5",
-                    color: "white",
-                    padding: "6px 10px",
-                  }}>
-                  Edit
+                <button className="btn-edit" title="Edit">
+                  <FiEdit2 size={16} />
                 </button>
               </Link>
+
               <button
                 onClick={() => handleDelete(task.id)}
                 className="btn-delete"
-                style={{ padding: "5px 10px" }}>
-                ✕
+                title="Delete">
+                <FiTrash2 size={16} />
               </button>
             </div>
           </div>

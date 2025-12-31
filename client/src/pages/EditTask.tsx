@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getTaskById, updateTask } from '../services/api';
-
-const STATUS_OPTIONS = ['To Do', 'In Progress', 'In Review', 'Done'];
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteTask, getTaskById, updateTask } from "../services/api";
+import { STATUS_OPTIONS } from "../constants/common";
+import { FiArrowLeft, FiSave, FiTrash2 } from "react-icons/fi";
 
 export default function EditTaskPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('');
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Fetch the existing task data
@@ -20,12 +20,12 @@ export default function EditTaskPage() {
       try {
         const res = await getTaskById(Number(id));
         setName(res.data.name);
-        setDescription(res.data.description || '');
+        setDescription(res.data.description || "");
         setStatus(res.data.status);
         setLoading(false);
       } catch (err) {
         alert("Failed to load task");
-        navigate('/');
+        navigate("/");
       }
     };
     fetchTask();
@@ -34,50 +34,95 @@ export default function EditTaskPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
-    
-    await updateTask(Number(id), { 
-      name, 
-      status, 
-      description 
+
+    await updateTask(Number(id), {
+      name,
+      status,
+      description,
     });
-    navigate('/');
+    navigate("/");
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    if (confirm("Are you sure you want to delete this task?")) {
+      await deleteTask(Number(id));
+      navigate('/');
+    }
   };
 
   if (loading) return <div className="container">Loading...</div>;
 
   return (
     <div className="container">
-      <h1>Edit Task</h1>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            background: "transparent",
+            padding: "10px",
+            marginRight: "10px",
+            color: "#64748b",
+          }}
+          className="btn-icon">
+          <FiArrowLeft size={24} />
+        </button>
+        <h1 style={{ margin: 0, fontSize: "2rem" }}>Edit Task</h1>
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Task Name:</label>
-          <input 
-            type="text" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            required 
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
         </div>
 
         <div className="form-group">
           <label>Description:</label>
-          <textarea 
-            value={description} 
+          <textarea
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db' }}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #d1d5db",
+            }}
           />
         </div>
 
         <div className="form-group">
           <label>Status:</label>
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
         </div>
 
-        <button type="submit" className="btn-primary" style={{ marginBottom: '10px' }}>Save Changes</button>
-        <button type="button" onClick={() => navigate('/')} style={{ width: '100%', background: '#9ca3af', color: 'white' }}>Cancel</button>
+        <div style={{ display: "flex", gap: "15px", marginTop: "30px" }}>
+          <button type="submit" className="btn-primary" style={{ flex: 2 }}>
+            <FiSave size={18} /> Save Changes
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            style={{
+              flex: 1,
+              backgroundColor: "#fee2e2",
+              color: "#ef4444",
+            }}>
+            <FiTrash2 size={18} /> Delete
+          </button>
+        </div>
       </form>
     </div>
   );
