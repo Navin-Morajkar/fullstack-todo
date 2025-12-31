@@ -60,75 +60,81 @@ export default function EditTaskPage() {
 
   return (
     <div className="container">
-      <div
-        style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
-        <button
-          onClick={() => navigate("/")}
+      <div className="controls-card">
+        <div
           style={{
-            background: "transparent",
-            padding: "10px",
-            marginRight: "10px",
-            color: "#64748b",
-          }}
-          className="btn-icon">
-          <FiArrowLeft size={24} />
-        </button>
-        <h1 style={{ margin: 0, fontSize: "2rem" }}>Edit Task</h1>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Task Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Description:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #d1d5db",
-            }}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Status:</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: "flex", gap: "15px", marginTop: "30px" }}>
-          <button type="submit" className="btn-primary" style={{ flex: 2 }}>
-            <FiSave size={18} /> Save Changes
-          </button>
-
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "30px",
+          }}>
           <button
-            type="button"
-            onClick={handleDeleteClick}
+            onClick={() => navigate("/")}
             style={{
-              flex: 1,
-              backgroundColor: "#fee2e2",
-              color: "#ef4444",
-            }}>
-            <FiTrash2 size={18} /> Delete
+              background: "transparent",
+              padding: "10px",
+              marginRight: "10px",
+              color: "#64748b",
+            }}
+            className="btn-icon">
+            <FiArrowLeft size={24} />
           </button>
+          <h1 style={{ margin: 0, fontSize: "2rem" }}>Edit Task</h1>
         </div>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Task Name:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Description:</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "6px",
+                border: "1px solid #d1d5db",
+              }}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Status:</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: "flex", gap: "15px", marginTop: "30px" }}>
+            <button type="submit" className="btn-primary" style={{ flex: 2 }}>
+              <FiSave size={18} /> Save Changes
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDeleteClick}
+              style={{
+                flex: 1,
+                backgroundColor: "#fee2e2",
+                color: "#ef4444",
+              }}>
+              <FiTrash2 size={18} /> Delete
+            </button>
+          </div>
+        </form>
+      </div>
       <AlertModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

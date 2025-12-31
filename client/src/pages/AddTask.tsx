@@ -28,6 +28,7 @@ export default function AddTaskPage() {
 
   return (
     <div className="container">
+      <div className="controls-card">
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
         <button
@@ -39,8 +40,6 @@ export default function AddTaskPage() {
         </button>
         <h1 style={{ margin: 0, fontSize: "2rem" }}>Create New Task</h1>
       </div>
-
-      <div className="controls-card">
         <form onSubmit={handleSubmit}>
           {/* Task Name */}
           <div className="form-group">

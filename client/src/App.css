@@ -29,11 +29,21 @@
 }
 
 body {
-  margin: 0;
+  /* Fallback color if image fails to load */
   background-color: var(--bg-app);
+  background-image: 
+    linear-gradient(rgba(248, 250, 252, 0.75), rgba(248, 250, 252, 0.75)),
+    url("../public/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+
+  margin: 0;
   color: var(--text-main);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
 .container {
