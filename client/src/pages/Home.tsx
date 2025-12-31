@@ -3,7 +3,7 @@ import { FiArrowDown, FiArrowUp, FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { AlertModal } from "../components/AlertModal/AlertModal";
 import TaskList from "../components/TaskList/TaskList";
-import { deleteTask, getTasks } from "../services/api";
+import { getTasks } from "../services/api";
 import type { Task } from "../types/common";
 
 const STATUS_OPTIONS = ["Incomplete", "In Progress", "In Review", "Done"];
@@ -112,7 +112,7 @@ export default function HomePage() {
           </button>
         </div>
       </div>
-      
+
       <TaskList tasks={tasks} isLoading={isLoading} loadTasks={loadTasks} />
 
       <AlertModal
