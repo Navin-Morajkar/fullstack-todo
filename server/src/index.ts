@@ -12,21 +12,39 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// --- ROUTES ---
-
-// 1. GET all tasks
+// GET tasks API
 app.get("/tasks", async (req: Request, res: Response) => {
   try {
+    // Extract query params
+    const { status, search } = req.query;
+
+    const whereClause: any = {};
+
+    // Filter by Status
+    if (status && status !== "All") {
+      whereClause.status = String(status);
+    }
+
+    // Filter by Search Name (Case insensitive)
+    if (search) {
+      whereClause.name = {
+        contains: String(search),
+        mode: "insensitive",
+      };
+    }
+
     const tasks = await prisma.task.findMany({
-      orderBy: { createdAt: "desc" }, // Show newest first
+      where: whereClause,
+      orderBy: { createdAt: "desc" },
     });
+
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: "Error fetching tasks" });
   }
 });
 
-// 2. CREATE a task
+// CREATE task API
 app.post("/tasks", async (req: Request, res: Response) => {
   try {
     const { name, status } = req.body;
@@ -49,7 +67,7 @@ app.post("/tasks", async (req: Request, res: Response) => {
   }
 });
 
-// 3. UPDATE a task (Mark complete/incomplete)
+// UPDATE task API
 app.put("/tasks/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -65,7 +83,7 @@ app.put("/tasks/:id", async (req: Request, res: Response) => {
   }
 });
 
-// 4. DELETE a task
+// DELETE task API
 app.delete("/tasks/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

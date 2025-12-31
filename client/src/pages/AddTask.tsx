@@ -36,15 +36,17 @@ export default function AddTaskPage() {
         </div>
 
         <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            Status:
-          </label>
-          <select
-            value={status}
+          <label style={{ display: 'block', marginBottom: '5px' }}>Status:</label>
+          <select 
+            value={status} 
             onChange={(e) => setStatus(e.target.value)}
-            style={{ width: "100%", padding: "8px" }}>
+            style={{ width: '100%', padding: '8px' }}
+          >
+            {/* MATCHES THE HOME PAGE OPTIONS */}
             <option value="Incomplete">Incomplete</option>
-            <option value="Complete">Complete</option>
+            <option value="In Progress">In Progress</option>
+            <option value="In Review">In Review</option>
+            <option value="Done">Done</option>
           </select>
         </div>
 

@@ -7,7 +7,11 @@ export const api = axios.create({
   baseURL: API_URL,
 });
 
-export const getTasks = () => api.get("/tasks");
+export const getTasks = (status?: string, search?: string) => {
+  return api.get("/tasks", {
+    params: { status, search },
+  });
+};
 
 export const addTask = (name: string, status: string) =>
   api.post("/tasks", { name, status });
